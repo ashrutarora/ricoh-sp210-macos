@@ -4,4 +4,5 @@
 . "$(dirname "$0")/common.sh"
 stop_scanner_service
 remove_old_scanner_service
+rm -f "$DEST/ricoh-sp210.ppd"   # version 1.0's copy; the PPD now lives in /Library/Printers/PPDs
 exit 0

@@ -6,6 +6,8 @@
 //       Bonjour announces it to this Mac only, so nobody else on the network sees it or can scan
 //       from your glass. Requests from web pages (Origin header, or a foreign Host name from DNS
 //       rebinding) are refused too. --log writes to ~/Library/Logs/RicohSP210Scanner.log.
+//   ricoh-sp210-scanner status
+//       Asks the scanner whether it is ready; a quick check that it can be reached over USB.
 //   ricoh-sp210-scanner scan [--grey] [--dpi 300] [--area x,y,width,height] FILE.png|.jpg|.pdf
 //       One scan from the command line; area in 1/300 inch. Also does 1200 dpi.
 //
@@ -64,6 +66,7 @@ func flag(_ name: String) -> Bool {
 
 let usage = """
 usage: ricoh-sp210-scanner serve [--port 8090] [--name NAME] [--log]
+       ricoh-sp210-scanner status
        ricoh-sp210-scanner scan [--grey] [--dpi 300] [--area x,y,width,height] FILE.png|.jpg|.pdf
 """
 
@@ -87,6 +90,16 @@ case "serve":
     }
     log("AirScan service for \(name) on http://127.0.0.1:\(port)/eSCL")
     dispatchMain()
+
+case "status":
+    do {
+        let scanner = try Scanner()
+        defer { scanner.close() }
+        let reply = try scanner.status()
+        print(reply.first == 1 ? "ready" : "busy (\(reply.map { String($0) }.joined(separator: " ")))")
+    } catch {
+        fail("\(error)")
+    }
 
 case "scan":
     args.removeFirst()

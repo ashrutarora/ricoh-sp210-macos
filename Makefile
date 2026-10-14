@@ -2,7 +2,7 @@
 # make pkg    the installer package, out/Ricoh-SP210-macOS-<version>.pkg
 # make dmg    the disk image people download, out/Ricoh-SP210-macOS-<version>.dmg
 # make test   the scanner service's security tests (against the installed service) and the
-#             printer driver's malformed-input tests
+#             printer driver's malformed-input tests; scanner/test_usb.sh also needs the printer
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 all:

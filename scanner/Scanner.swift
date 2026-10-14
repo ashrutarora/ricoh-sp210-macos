@@ -57,9 +57,10 @@ final class Scanner {
         guard let match = IOServiceMatching("IOUSBHostInterface") as NSMutableDictionary? else {
             throw ScannerError("IOKit matching failed")
         }
-        match["idVendor"] = vendorID
-        match["idProduct"] = productID
-        match["bInterfaceNumber"] = scannerInterface
+        // The USB family only takes certain key combinations at the top level (and this one needs
+        // bConfigurationValue too); IOPropertyMatch compares the properties as they are.
+        match["IOPropertyMatch"] = ["idVendor": vendorID, "idProduct": productID,
+                                    "bInterfaceNumber": scannerInterface]
         let service = IOServiceGetMatchingService(mach_port_t(MACH_PORT_NULL), match)
         guard service != 0 else { throw ScannerError("Ricoh SP 210SU not found on USB") }
         defer { IOObjectRelease(service) }
