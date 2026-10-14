@@ -1,5 +1,18 @@
 # Ricoh SP 210SU driver for macOS
 
+[![Latest release](https://img.shields.io/github/v/release/ashrutarora/ricoh-sp210-macos?label=release)](https://github.com/ashrutarora/ricoh-sp210-macos/releases/latest)
+![macOS 13+](https://img.shields.io/badge/macOS-13%2B-black?logo=apple)
+![Apple Silicon and Intel](https://img.shields.io/badge/Apple%20Silicon%20%2B%20Intel-universal-555)
+[![Licence: GPL-2.0-or-later](https://img.shields.io/badge/licence-GPL--2.0--or--later-blue)](LICENSE)
+
+- **Print** from any Mac app with Cmd+P.
+- **Scan** in Image Capture and Preview (SP 210SU).
+- **Print from iPhone and iPad** through your Mac.
+
+Output is byte for byte the same as Ricoh's own Linux driver. One installer, no Terminal.
+**[Download the latest release](https://github.com/ashrutarora/ricoh-sp210-macos/releases/latest)** ·
+[How I built it](https://ashrutarora.github.io/projects/ricoh-sp210-macos/)
+
 Ricoh never made macOS drivers for the SP 210 series of USB laser printers, so on a Mac they show up but
 cannot print or scan. This project fixes both: a native printer driver (a CUPS filter), so you print from any
 app with Cmd+P, and a scanner service, so the SP 210SU's scanner works in Image Capture and Preview.
@@ -107,9 +120,18 @@ Extensions; scanning needs it switched on. Its log is `~/Library/Logs/RicohSP210
 
 ## How it works
 
-```
-printing: any app > macOS CUPS (600 dpi greyscale raster) > rastertoricohsp210 > CUPS USB backend > printer
-scanning: Image Capture / Preview > AirScan (eSCL) over 127.0.0.1 > ricoh-sp210-scanner > USB > scanner
+```mermaid
+flowchart LR
+  subgraph Printing
+    A[Any Mac app] --> B[macOS CUPS<br/>600 dpi grey raster]
+    B --> C[rastertoricohsp210<br/>this driver]
+    C --> D[CUPS USB backend]
+  end
+  subgraph Scanning
+    E[Image Capture / Preview] -- "AirScan (eSCL)<br/>127.0.0.1 only" --> F[ricoh-sp210-scanner<br/>this service]
+  end
+  D -- "USB interface 0" --> P([SP 210SU])
+  F -- "USB interface 1" --> P
 ```
 
 `native/rastertoricohsp210.c` reads CUPS raster, halftones it with its own 24x24 clustered-dot screen
