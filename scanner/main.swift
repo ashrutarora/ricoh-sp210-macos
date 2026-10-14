@@ -6,6 +6,8 @@
 //       Bonjour announces it to this Mac only, so nobody else on the network sees it or can scan
 //       from your glass. Requests from web pages (Origin header, or a foreign Host name from DNS
 //       rebinding) are refused too. --log writes to ~/Library/Logs/RicohSP210Scanner.log.
+//       It also announces this driver's print queues to iPhones and iPads (AirPrint) while they
+//       are shared in System Settings > General > Sharing > Printer Sharing; see AirPrint.swift.
 //   ricoh-sp210-scanner status
 //       Asks the scanner whether it is ready; a quick check that it can be reached over USB.
 //   ricoh-sp210-scanner scan [--grey] [--dpi 300] [--area x,y,width,height] FILE.png|.jpg|.pdf
@@ -89,6 +91,9 @@ case "serve":
         exit(1)
     }
     log("AirScan service for \(name) on http://127.0.0.1:\(port)/eSCL")
+    // Print from iPhone and iPad: AirPrint announcements for this driver's shared print queues.
+    let airPrint = AirPrint()
+    airPrint.start()
     dispatchMain()
 
 case "status":

@@ -54,6 +54,20 @@ paper source (Tray 1, bypass tray), paper type (plain, recycled, thin, thick) an
 Open **Applications > Utilities > Uninstall Ricoh SP 210SU**. From a copy of this repository, `./uninstall.sh`
 does the same.
 
+## Print from iPhone or iPad
+
+1. On the Mac, open **System Settings > General > Sharing**, turn on **Printer Sharing**, click the **ⓘ**
+   next to it and tick **Ricoh SP 210SU (macOS driver)**.
+2. On the iPhone or iPad, use **Share > Print** in any app and pick **Ricoh SP 210SU @ <your Mac's name>**.
+
+The Mac must be on and awake, on the same Wi-Fi, with the printer connected. macOS shares the printer but
+only announces AirPrint printers to iPhones, so the scanner service announces it as one while it is shared,
+and stops when sharing is turned off. Sharing lets anyone on your network print to it.
+
+If the phone's job waits forever, the printer may only accept user names of accounts on this Mac (iPhones send
+their own). `lpadmin -p Ricoh_SP210SU -u allow:all` lets any user print; the installer sets this, but
+macOS may change it when you edit the printer's users in Sharing. The scanner service's log says so too.
+
 ## Scanning (SP 210SU)
 
 The installer adds a small background service, started at login, that makes the scanner appear as
@@ -120,7 +134,7 @@ Needs the Xcode Command Line Tools: `xcode-select --install`.
 - `make test`: `test/security/run.sh` runs malformed-input tests on the printer driver under
   AddressSanitizer; `scanner/test_image.sh` checks levels, scaling and the PNG, JPEG and PDF output; `scanner/test_security.sh` checks, against the installed scanner service, that web pages
   cannot drive it and that it refuses ambiguous HTTP requests; `scanner/test_bonjour.sh` that it is announced
-  to this Mac only. With the printer connected, `scanner/test_usb.sh` checks the scanner answers over USB
+  to this Mac only; `scanner/test_airprint.sh` that shared queues are announced to iPhones, and only while shared. With the printer connected, `scanner/test_usb.sh` checks the scanner answers over USB
   (`ricoh-sp210-scanner status`).
 - **Byte-for-byte check against Ricoh's driver.** `tools/verify.sh` renders test pages, runs Ricoh's own
   Linux filter in a Docker container and a `make RICOH_DITHER=1` build of this driver on the same input, and

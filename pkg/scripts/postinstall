@@ -31,6 +31,9 @@ case "$(as_user defaults read org.cups.PrintingPrefs DefaultPaperID)" in
 esac
 
 lpadmin -p "$QUEUE" -E -v "$URI" -P "$PPD" -D "$QUEUE_NAME" -o printer-is-shared=false -o PageSize="$size"
+# Any user name may print, so iPhones can once the printer is shared (they send their own name,
+# which is not an account on this Mac). While it is not shared only this Mac can reach it anyway.
+lpadmin -p "$QUEUE" -u allow:all
 cupsenable "$QUEUE"
 cupsaccept "$QUEUE"
 

@@ -20,6 +20,7 @@ test:
 	scanner/test_image.sh
 	scanner/test_security.sh
 	scanner/test_bonjour.sh
+	scanner/test_airprint.sh
 
 clean:
 	$(MAKE) -C native clean

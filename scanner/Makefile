@@ -1,7 +1,7 @@
 # make    the scanner service, one file for Apple Silicon and Intel Macs (macOS 13 or later)
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-SRC = main.swift Scanner.swift Image.swift ESCL.swift HTTP.swift Bonjour.swift
+SRC = main.swift Scanner.swift Image.swift ESCL.swift HTTP.swift Bonjour.swift AirPrint.swift
 SWIFTFLAGS = -O -swift-version 5 -I CExpat
 MIN_MACOS = 13.0
 
