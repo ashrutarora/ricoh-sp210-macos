@@ -1,14 +1,14 @@
 # Ricoh SP 210SU driver for macOS
 
-Ricoh never made a macOS driver for the SP 210 series of USB laser printers, so on a Mac they show up but
-cannot print. This is a native macOS printer driver (a CUPS filter) for them: install it and print from any
-app with Cmd+P.
+Ricoh never made macOS drivers for the SP 210 series of USB laser printers, so on a Mac they show up but
+cannot print or scan. This project fixes both: a native printer driver (a CUPS filter), so you print from any
+app with Cmd+P, and a scanner service, so the SP 210SU's scanner works in Image Capture and Preview.
 
 It speaks the printer's own print format, worked out from Ricoh's Linux driver with Ghidra for
 interoperability (see [FORMAT.md](FORMAT.md)). With Ricoh's dither table swapped in, its output is byte for
 byte the same as Ricoh's Linux driver on every test case. No Ricoh code is included or needed.
 
-**Status:** prints on a real SP 210SU, macOS 27 on Apple Silicon. Other models and Intel Macs should work but
+**Status:** prints and scans on a real SP 210SU, macOS 27 on Apple Silicon. Other models and Intel Macs should work but
 are untested; reports welcome.
 
 | Model | Status |
@@ -50,10 +50,28 @@ paper source (Tray 1, bypass tray), paper type (plain, recycled, thin, thick) an
 ./uninstall.sh
 ```
 
+## Scanning (SP 210SU)
+
+Needs Homebrew's libusb: `brew install libusb`. Then:
+
+```
+scanner/install-scanner.sh
+```
+
+This sets up a small background service for your user account (started at every login) that makes the
+scanner appear as **Ricoh SP 210SU** in Image Capture, in Preview (File > Import from Scanner) and in
+System Settings > Printers & Scanners. It speaks Apple's AirScan (eSCL) protocol on 127.0.0.1 only, so nothing
+else on your network can scan from your glass, and it refuses requests coming from web pages. Colour or greyscale, 75 to 600 dpi, any area of the glass,
+saved as PDF, JPEG or PNG.
+
+`scanner/install-scanner.sh --remove` removes it. Its log is `~/Library/Logs/RicohSP210Scanner.log`.
+[SCANNER.md](SCANNER.md) documents the scanner's USB protocol.
+
 ## Limitations
 
-- Printing only. The SP 210SU's scanner is not supported.
-- 600 dpi, black and white, one-sided.
+- Printing: 600 dpi, black and white, one-sided.
+- Scanning: flatbed only, one page at a time. The scanner also does 1200 dpi (from Python, see
+  `scanner/ricoh_scanner.py`), but slowly (over 10 minutes a page), so the Mac apps are offered up to 600.
 - No toner, paper or error status from the printer.
 
 ## Troubleshooting
@@ -63,6 +81,8 @@ paper source (Tray 1, bypass tray), paper type (plain, recycled, thin, thick) an
 - **Jobs stay in the queue or fail:** look at `/var/log/cups/error_log` (`cupsctl --debug-logging` for more
   detail) and check you printed to "Ricoh SP 210SU (macOS driver)".
 - **Wrong paper size:** pick the size in the print dialog, or reinstall with `RICOH_PAGESIZE=...`.
+- **Scanner not listed or scans fail:** check the printer is on and connected, then look at
+  `~/Library/Logs/RicohSP210Scanner.log`. Only one app can scan at a time.
 
 ## How it works
 
@@ -77,7 +97,7 @@ printer's job and page headers. [FORMAT.md](FORMAT.md) documents the format.
 ## For developers
 
 - `make -C native` builds the driver; `test/security/run.sh` runs malformed-input tests under
-  AddressSanitizer.
+  AddressSanitizer; `scanner/test_security.sh` checks that web pages cannot drive the scanner service.
 - **Byte-for-byte check against Ricoh's driver.** `tools/verify.sh` renders test pages, runs Ricoh's own
   Linux filter in a Docker container and a `make RICOH_DITHER=1` build of this driver on the same input, and
   requires identical output. It needs Docker Desktop and your own copy of Ricoh's filter, which is not
@@ -92,7 +112,10 @@ printer's job and page headers. [FORMAT.md](FORMAT.md) documents the format.
 
 - [jbigkit](https://www.cl.cam.ac.uk/~mgk25/jbigkit/) by Markus Kuhn (GPL-2.0-or-later) for JBIG
   compression, with one small change described in [third_party/jbigkit/README.md](third_party/jbigkit/README.md).
-- [Ghidra](https://github.com/NationalSecurityAgency/ghidra) for studying Ricoh's Linux driver.
+- [Ghidra](https://github.com/NationalSecurityAgency/ghidra) for studying Ricoh's Linux printer driver and Windows
+  scanner driver.
+- [AirSane](https://github.com/SimulPiscator/AirSane), whose AirScan notes for macOS shaped the scanner service.
+- [pyusb](https://github.com/pyusb/pyusb), [libusb](https://libusb.info) and [Pillow](https://python-pillow.org).
 - [revisitor/ricoh-sp100](https://github.com/revisitor/ricoh-sp100) and
   [PranavDalvi/RICOH-SP-210-Printer-Drivers-Linux](https://github.com/PranavDalvi/RICOH-SP-210-Printer-Drivers-Linux)
   for the Linux driver installation notes that pointed the way.
