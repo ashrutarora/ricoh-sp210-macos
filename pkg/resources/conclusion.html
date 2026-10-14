@@ -1,0 +1,39 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 13px -apple-system, sans-serif; line-height: 1.45; margin: 0 4px; }
+  h1 { font-size: 17px; margin: 0 0 10px; }
+  h2 { font-size: 13px; margin: 14px 0 4px; }
+  ol, ul { margin: 4px 0; padding-left: 20px; }
+  li { margin: 3px 0; }
+  .note { color: GrayText; }
+</style></head>
+<body>
+<h1>All done</h1>
+
+<h2>If the printer is not connected yet</h2>
+<p>Plug it in and switch it on. macOS adds it by itself, with this driver, after a few seconds.</p>
+
+<h2>To print</h2>
+<p>In any app choose <b>File &gt; Print</b> and pick <b>Ricoh SP 210SU</b> as the printer.</p>
+
+<h2>To scan</h2>
+<ol>
+  <li>Put the page face down on the glass and close the lid.</li>
+  <li>Open <b>Image Capture</b> (in Applications), or in Preview choose
+    <b>File &gt; Import from Scanner</b>.</li>
+  <li>Pick <b>Ricoh SP 210SU</b> on the left and click <b>Scan</b>.</li>
+</ol>
+
+<h2>If something does not work</h2>
+<ul>
+  <li><b>macOS says “Background Items Added”</b>: that is the scanner service. Leave it switched on
+    in System Settings &gt; General &gt; Login Items &amp; Extensions, or scanning stops.</li>
+  <li><b>You see two Ricoh printers</b>: use the one called “Ricoh SP 210SU (macOS driver)”.
+    You can remove the other in System Settings &gt; Printers &amp; Scanners.</li>
+  <li><b>Image Capture shows “Waiting for scanner” or error -9921</b>: quit Image Capture and
+    open it again.</li>
+</ul>
+<p class="note">To remove everything, open Applications &gt; Utilities &gt; Uninstall Ricoh SP 210SU.</p>
+</body></html>

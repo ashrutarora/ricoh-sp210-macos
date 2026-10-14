@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 13px -apple-system, sans-serif; line-height: 1.45; margin: 0 4px; }
+  h1 { font-size: 17px; margin: 0 0 10px; }
+  h2 { font-size: 13px; margin: 16px 0 4px; }
+  ol, ul { margin: 4px 0; padding-left: 20px; }
+  li { margin: 3px 0; }
+  .note { color: GrayText; }
+</style></head>
+<body>
+<h1>Ricoh SP 210SU driver for Mac</h1>
+<p>Ricoh does not make a Mac driver for the SP 210 series. This installs one so you can print from
+any app and scan with Image Capture or Preview.</p>
+
+<h2>Before you start</h2>
+<ol>
+  <li>Connect the printer to this Mac with its USB cable and switch it on.
+    <span class="note">(You can also do this after installing.)</span></li>
+  <li>Click <b>Continue</b>, then <b>Install</b>. Your Mac asks for your password: it is the one
+    you use to log in to this Mac.</li>
+</ol>
+
+<h2>What gets installed</h2>
+<ul>
+  <li><b>Printer driver</b>: the printer appears as “Ricoh SP 210SU (macOS driver)”. If macOS has
+    already added it as “RICOH SP 210SU” with a Generic PCL driver (which cannot print on this
+    model), the installer removes that copy.</li>
+  <li><b>Scanner service</b>: a small background program that lets Mac apps use the scanner. It
+    only works on this Mac; nobody else on your network can see it.</li>
+  <li><b>Uninstall Ricoh SP 210SU</b>, in Applications &gt; Utilities, to remove it all later.</li>
+</ul>
+<p class="note">Works on Macs with Apple chips and Intel Macs, on macOS 13 Ventura or later. Tested on
+the SP 210SU; the SP 210, 211 and 211SU should work too. Free and open source:
+github.com/ashrutarora/ricoh-sp210-macos</p>
+</body></html>

@@ -4,7 +4,7 @@
 *% SPDX-License-Identifier: GPL-2.0-or-later
 *% Paper sizes are the printer's; the 12 pt margins are what the printer can print to.
 *FormatVersion: "4.3"
-*FileVersion: "1.0"
+*FileVersion: "1.1"
 *LanguageVersion: English
 *LanguageEncoding: ISOLatin1
 *PCFileName: "RSP210.PPD"

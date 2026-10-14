@@ -1,0 +1,7 @@
+#!/bin/sh
+# Stop the scanner service while its files are replaced.
+# SPDX-License-Identifier: GPL-2.0-or-later
+. "$(dirname "$0")/common.sh"
+stop_scanner_service
+remove_old_scanner_service
+exit 0

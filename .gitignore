@@ -10,3 +10,6 @@ native/dither_ricoh.h
 native/*.tmp
 vendor/*
 !vendor/README.md
+scanner/ricoh-sp210-scanner
+scanner/ricoh-sp210-scanner.arm64
+scanner/ricoh-sp210-scanner.x86_64

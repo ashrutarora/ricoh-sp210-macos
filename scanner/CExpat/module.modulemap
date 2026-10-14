@@ -1,0 +1,5 @@
+module CExpat [system] {
+  header "shim.h"
+  link "expat"
+  export *
+}

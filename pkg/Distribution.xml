@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>Ricoh SP 210SU driver</title>
+    <welcome file="welcome.html" mime-type="text/html"/>
+    <conclusion file="conclusion.html" mime-type="text/html"/>
+    <options customize="never" require-scripts="false" hostArchitectures="arm64,x86_64"/>
+    <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true"/>
+    <allowed-os-versions>
+        <os-version min="13.0"/>
+    </allowed-os-versions>
+    <choices-outline>
+        <line choice="default">
+            <line choice="io.github.ashrutarora.ricoh-sp210"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="io.github.ashrutarora.ricoh-sp210" visible="false">
+        <pkg-ref id="io.github.ashrutarora.ricoh-sp210"/>
+    </choice>
+    <pkg-ref id="io.github.ashrutarora.ricoh-sp210" version="VERSION" onConclusion="none">ricoh-sp210.pkg</pkg-ref>
+</installer-gui-script>

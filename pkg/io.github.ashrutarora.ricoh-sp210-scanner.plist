@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>io.github.ashrutarora.ricoh-sp210-scanner</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Library/Printers/RicohSP210/ricoh-sp210-scanner</string>
+    <string>serve</string>
+    <string>--log</string>
+  </array>
+  <key>LimitLoadToSessionType</key><string>Aqua</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>10</integer>
+</dict>
+</plist>

@@ -1,7 +1,7 @@
 # Ricoh SP 210SU scanner protocol
 
 Worked out from Ricoh's Windows scanner driver (`RtScan64.dll` in "USB TWAIN/WIA Driver" 1.02) with Ghidra, for
-interoperability, and tested on a real SP 210SU. Implemented in [scanner/ricoh_scanner.py](scanner/ricoh_scanner.py).
+interoperability, and tested on a real SP 210SU. Implemented in [scanner/Scanner.swift](scanner/Scanner.swift).
 
 ## USB
 

@@ -1,0 +1,41 @@
+#!/bin/sh
+# Start the scanner service and, if the printer is connected, add it with this driver.
+# SPDX-License-Identifier: GPL-2.0-or-later
+. "$(dirname "$0")/common.sh"
+
+for uid in $(gui_users); do
+  launchctl bootstrap "gui/$uid" "$AGENT" 2>/dev/null || launchctl kickstart -k "gui/$uid/$LABEL"
+done
+
+URI=$(printer_uri)
+if [ -z "$URI" ]; then
+  echo "Printer not connected; macOS adds it with this driver when it is plugged in."
+  exit 0
+fi
+
+# Default paper: the logged-in person's choice in Printers & Scanners, else Letter in Letter
+# countries and A4 elsewhere.
+user=$(stat -f %Su /dev/console)
+as_user() { sudo -u "$user" "$@" 2>/dev/null; }
+case "$(as_user defaults read org.cups.PrintingPrefs DefaultPaperID)" in
+  iso-a4) size=A4 ;;
+  na-letter) size=Letter ;;
+  na-legal) size=Legal ;;
+  iso-a5) size=A5 ;;
+  *)
+    case "$(as_user defaults read -g AppleLocale | sed 's/.*_//; s/@.*//')" in
+      US|CA|MX|PH|CL|CO|VE|GT|CR|PA|DO|PR|SV|NI|HN|BO) size=Letter ;;
+      *) size=A4 ;;
+    esac
+    ;;
+esac
+
+lpadmin -p "$QUEUE" -E -v "$URI" -P "$PPD" -D "$QUEUE_NAME" -o printer-is-shared=false -o PageSize="$size"
+cupsenable "$QUEUE"
+cupsaccept "$QUEUE"
+
+# macOS adds this printer by itself with a Generic PCL driver, which cannot print on it.
+for q in $(other_queues "$URI"); do
+  lpadmin -x "$q" && echo "Removed $q, which used a driver that cannot print on this printer."
+done
+exit 0

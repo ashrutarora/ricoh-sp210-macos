@@ -1,18 +1,19 @@
 #!/bin/sh
-# Installs the Ricoh SP 210 series printer on macOS.
-#   ./install.sh            the native driver (default; no Docker)
-#   ./install.sh --docker   fallback: Ricoh's own Linux filter in a Docker container
+# Installs the Ricoh SP 210 series driver on macOS from this source tree.
+#   ./install.sh            builds the installer package (printer driver and scanner service)
+#                           and installs it, the same as the downloadable disk image
+#   ./install.sh --docker   fallback printing: Ricoh's own Linux filter in a Docker container
 #                           (needs your own copy of it at vendor/rastertolilo, see README)
 # Run as yourself, not root; it asks for your password once.
-# Environment: RICOH_URI=usb://...  pick the printer yourself
-#              RICOH_PAGESIZE=A4  default paper size (otherwise from macOS settings / region)
+# Environment for --docker: RICOH_URI=usb://...  pick the printer yourself
+#                           RICOH_PAGESIZE=A4  default paper size (otherwise from macOS settings / region)
 # SPDX-License-Identifier: GPL-2.0-or-later
 set -eu
 cd "$(dirname "$0")"
 
 QUEUE="Ricoh_SP210SU"
 NAME="Ricoh SP 210SU (macOS driver)"
-DEST="/Library/Printers/RicohSP210"
+DEST="/Library/Printers/RicohSP210Docker"   # --docker only; the package owns RicohSP210
 MODE="${1:-native}"
 
 if [ "$(id -u)" = 0 ]; then
@@ -24,6 +25,15 @@ fi
 if ! [ -t 0 ]; then
   export SUDO_ASKPASS="$PWD/tools/askpass.sh"
   sudo() { command sudo -A "$@"; }
+fi
+
+if [ "$MODE" = native ]; then
+  echo "1/2 Building the installer..."
+  PKG=$(pkg/build.sh | tail -1)
+  echo "2/2 Installing it (asks for your password)..."
+  sudo installer -pkg "$PKG" -target /
+  echo "Done. Print with \"Ricoh SP 210SU (macOS driver)\"; scan with Image Capture or Preview."
+  exit 0
 fi
 
 echo "1/4 Finding the printer on USB..."
@@ -55,12 +65,6 @@ fi
 
 PPD_SRC=native/ricoh-sp210.ppd
 case "$MODE" in
-  native)
-    echo "2/4 Building the native filter..."
-    make -s -C native
-    FILTER=native/rastertoricohsp210
-    docker rm -f ricoh-sp210 >/dev/null 2>&1 || true   # left over from --docker
-    ;;
   --docker)
     if ! [ -f vendor/rastertolilo ]; then
       echo "Fallback mode needs Ricoh's filter at vendor/rastertolilo; see README." >&2

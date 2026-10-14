@@ -4,6 +4,8 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 CFLAGS ?= -O2 -Wall -Wextra
+# One file for Apple Silicon and Intel Macs, macOS 13 or later (like the scanner service).
+ARCHFLAGS ?= -arch arm64 -arch x86_64 -mmacosx-version-min=13.0
 JBIG = ../third_party/jbigkit
 DEFS = -DJBG_KEEP_TRAILING_ZEROS=1 -Wno-deprecated-declarations
 SRC = rastertoricohsp210.c $(JBIG)/jbig.c $(JBIG)/jbig_ar.c
@@ -18,7 +20,7 @@ HEADER = dither_own.h
 endif
 
 $(TARGET): $(SRC) $(HEADER)
-	$(CC) $(CFLAGS) $(DEFS) -I$(JBIG) -o $@ $(SRC) -lcups
+	$(CC) $(CFLAGS) $(ARCHFLAGS) $(DEFS) -I$(JBIG) -o $@ $(SRC) -lcups
 
 dither_ricoh.h: ../vendor/rastertolilo ../tools/extract_ricoh_dither.py
 	python3 -I ../tools/extract_ricoh_dither.py ../vendor/rastertolilo > $@.tmp && mv $@.tmp $@

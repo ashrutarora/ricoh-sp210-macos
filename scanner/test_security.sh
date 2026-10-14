@@ -52,6 +52,44 @@ for loc in $(printf '%s\n' "$replies" | tail -n +2); do curl -s -o /dev/null -X 
 if [ "$n" = 1 ]; then echo "ok   smuggled request after a refusal (1 reply, connection closed)"
 else echo "FAIL smuggled request after a refusal: $n replies on one connection"; fail=1; fi
 
+# Request framing: anything ambiguous about where a body ends is refused and the connection closed.
+framing=$(python3 -I - "${RICOH_SCANNER_PORT:-8090}" <<'PY'
+import re, socket, sys
+port = int(sys.argv[1])
+host = b"Host: 127.0.0.1:%d\r\n" % port
+def ask(raw):
+    s = socket.create_connection(("127.0.0.1", port)); s.settimeout(3)
+    try:
+        s.sendall(raw)
+    except OSError:
+        pass
+    data = b""
+    try:
+        while chunk := s.recv(65536):
+            data += chunk
+    except (socket.timeout, ConnectionResetError):
+        pass
+    s.close()
+    codes = [c.decode() for c in re.findall(rb"HTTP/1\.1 (\d{3}) ", data)]
+    return ",".join(codes) or "none"
+status = b"GET /eSCL/ScannerStatus HTTP/1.1\r\n" + host
+print("chunked", ask(b"POST /eSCL/ScanJobs HTTP/1.1\r\n" + host + b"Transfer-Encoding: chunked\r\n\r\n0\r\n\r\n" + status + b"\r\n"))
+print("two-lengths", ask(b"POST /eSCL/ScanJobs HTTP/1.1\r\n" + host + b"Content-Length: 0\r\nContent-Length: 40\r\n\r\n" + status + b"\r\n"))
+print("huge-headers", ask(b"GET /eSCL/ScannerStatus HTTP/1.1\r\n" + host + b"X-Pad: " + b"a" * 40000 + b"\r\n\r\n"))
+print("huge-body", ask(b"POST /eSCL/ScanJobs HTTP/1.1\r\n" + host + b"Content-Length: 2000000\r\n\r\n"))
+print("keep-alive", ask(status + b"\r\n" + status + b"Connection: close\r\n\r\n"))
+PY
+)
+check_framing() { # name expected
+  got=$(printf '%s\n' "$framing" | awk -v n="$1" '$1 == n {print $2}')
+  if [ "$got" = "$2" ]; then echo "ok   $1 ($got)"; else echo "FAIL $1: got $got, want $2"; fail=1; fi
+}
+check_framing chunked 411
+check_framing two-lengths 400
+check_framing huge-headers 431
+check_framing huge-body 413
+check_framing keep-alive 200,200
+
 # DTDs must be refused whatever the text encoding (a UTF-16 body hides "<!DOCTYPE" from a byte search).
 DTD=$(mktemp -t ricoh-dtd)
 python3 -I - > "$DTD" <<'PY'
