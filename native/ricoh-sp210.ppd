@@ -1,0 +1,142 @@
+*PPD-Adobe: "4.3"
+*% PPD for the Ricoh SP 210 / SP 211 series with the rastertoricohsp210 filter (macOS).
+*% Copyright (C) 2026 Ashrut Arora
+*% SPDX-License-Identifier: GPL-2.0-or-later
+*% Paper sizes are the printer's; the 12 pt margins are what the printer can print to.
+*FormatVersion: "4.3"
+*FileVersion: "1.0"
+*LanguageVersion: English
+*LanguageEncoding: ISOLatin1
+*PCFileName: "RSP210.PPD"
+*Manufacturer: "Ricoh"
+*Product: "(SP 210SU)"
+*Product: "(SP 210)"
+*Product: "(SP 211)"
+*ModelName: "Ricoh SP 210 series"
+*ShortNickName: "Ricoh SP 210 series"
+*NickName: "Ricoh SP 210 series, rastertoricohsp210"
+*1284DeviceID: "MFG:RICOH;MDL:SP 210SU;"
+*PSVersion: "(3010.000) 0"
+*LanguageLevel: "3"
+*ColorDevice: False
+*DefaultColorSpace: Gray
+*FileSystem: False
+*Throughput: "22"
+*LandscapeOrientation: Plus90
+*TTRasterizer: Type42
+*cupsVersion: 2.2
+*cupsModelNumber: 0
+*cupsManualCopies: False
+*cupsFilter: "application/vnd.cups-raster 100 /Library/Printers/RicohSP210/rastertoricohsp210"
+
+*OpenUI *PageSize/Paper Size: PickOne
+*OrderDependency: 10 AnySetup *PageSize
+*DefaultPageSize: A4
+*PageSize A4/A4: "<</PageSize[595 842]/ImagingBBox null>>setpagedevice"
+*PageSize Letter/US Letter: "<</PageSize[612 792]/ImagingBBox null>>setpagedevice"
+*PageSize Legal/US Legal: "<</PageSize[612 1008]/ImagingBBox null>>setpagedevice"
+*PageSize Executive/Executive: "<</PageSize[522 756]/ImagingBBox null>>setpagedevice"
+*PageSize HalfLetter/Statement (5.5 x 8.5 in): "<</PageSize[396 612]/ImagingBBox null>>setpagedevice"
+*PageSize A5/A5: "<</PageSize[420 595]/ImagingBBox null>>setpagedevice"
+*PageSize A6/A6: "<</PageSize[298 420]/ImagingBBox null>>setpagedevice"
+*PageSize B5/B5 (JIS): "<</PageSize[516 729]/ImagingBBox null>>setpagedevice"
+*PageSize B6/B6 (JIS): "<</PageSize[363 516]/ImagingBBox null>>setpagedevice"
+*PageSize 16K/16K (184 x 260 mm): "<</PageSize[522 737]/ImagingBBox null>>setpagedevice"
+*PageSize 16K1/16K (195 x 270 mm): "<</PageSize[553 765]/ImagingBBox null>>setpagedevice"
+*PageSize 16K2/16K (197 x 273 mm): "<</PageSize[558 774]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageSize
+
+*OpenUI *PageRegion/Paper Size: PickOne
+*OrderDependency: 10 AnySetup *PageRegion
+*DefaultPageRegion: A4
+*PageRegion A4/A4: "<</PageSize[595 842]/ImagingBBox null>>setpagedevice"
+*PageRegion Letter/US Letter: "<</PageSize[612 792]/ImagingBBox null>>setpagedevice"
+*PageRegion Legal/US Legal: "<</PageSize[612 1008]/ImagingBBox null>>setpagedevice"
+*PageRegion Executive/Executive: "<</PageSize[522 756]/ImagingBBox null>>setpagedevice"
+*PageRegion HalfLetter/Statement (5.5 x 8.5 in): "<</PageSize[396 612]/ImagingBBox null>>setpagedevice"
+*PageRegion A5/A5: "<</PageSize[420 595]/ImagingBBox null>>setpagedevice"
+*PageRegion A6/A6: "<</PageSize[298 420]/ImagingBBox null>>setpagedevice"
+*PageRegion B5/B5 (JIS): "<</PageSize[516 729]/ImagingBBox null>>setpagedevice"
+*PageRegion B6/B6 (JIS): "<</PageSize[363 516]/ImagingBBox null>>setpagedevice"
+*PageRegion 16K/16K (184 x 260 mm): "<</PageSize[522 737]/ImagingBBox null>>setpagedevice"
+*PageRegion 16K1/16K (195 x 270 mm): "<</PageSize[553 765]/ImagingBBox null>>setpagedevice"
+*PageRegion 16K2/16K (197 x 273 mm): "<</PageSize[558 774]/ImagingBBox null>>setpagedevice"
+*CloseUI: *PageRegion
+
+*DefaultImageableArea: A4
+*ImageableArea A4: "12 12 583 830"
+*ImageableArea Letter: "12 12 600 780"
+*ImageableArea Legal: "12 12 600 996"
+*ImageableArea Executive: "12 12 510 744"
+*ImageableArea HalfLetter: "12 12 384 600"
+*ImageableArea A5: "12 12 408 583"
+*ImageableArea A6: "12 12 286 408"
+*ImageableArea B5: "12 12 504 717"
+*ImageableArea B6: "12 12 351 504"
+*ImageableArea 16K: "12 12 510 725"
+*ImageableArea 16K1: "12 12 541 753"
+*ImageableArea 16K2: "12 12 546 762"
+
+*DefaultPaperDimension: A4
+*PaperDimension A4: "595 842"
+*PaperDimension Letter: "612 792"
+*PaperDimension Legal: "612 1008"
+*PaperDimension Executive: "522 756"
+*PaperDimension HalfLetter: "396 612"
+*PaperDimension A5: "420 595"
+*PaperDimension A6: "298 420"
+*PaperDimension B5: "516 729"
+*PaperDimension B6: "363 516"
+*PaperDimension 16K: "522 737"
+*PaperDimension 16K1: "553 765"
+*PaperDimension 16K2: "558 774"
+
+*% Custom sizes: 90 x 148 mm up to 216 x 356 mm
+*MaxMediaWidth: "612"
+*MaxMediaHeight: "1009"
+*HWMargins: 12 12 12 12
+*CustomPageSize True: "pop pop pop <</PageSize[5 -2 roll]/ImagingBBox null>>setpagedevice"
+*ParamCustomPageSize Width: 1 points 255 612
+*ParamCustomPageSize Height: 2 points 420 1009
+*ParamCustomPageSize WidthOffset: 3 points 0 0
+*ParamCustomPageSize HeightOffset: 4 points 0 0
+*ParamCustomPageSize Orientation: 5 int 0 0
+
+*OpenUI *Resolution/Resolution: PickOne
+*OrderDependency: 20 AnySetup *Resolution
+*DefaultResolution: 600dpi
+*Resolution 600dpi/600 dpi: "<</HWResolution[600 600]/cupsBitsPerColor 8/cupsRowCount 0/cupsRowFeed 0/cupsRowStep 0>>setpagedevice"
+*CloseUI: *Resolution
+
+*OpenUI *ColorModel/Colour: PickOne
+*OrderDependency: 30 AnySetup *ColorModel
+*DefaultColorModel: Gray
+*ColorModel Gray/Black and white: "<</cupsColorOrder 0/cupsColorSpace 3/cupsCompression 0>>setpagedevice"
+*CloseUI: *ColorModel
+
+*OpenUI *InputSlot/Paper Source: PickOne
+*OrderDependency: 40 AnySetup *InputSlot
+*DefaultInputSlot: Tray1
+*InputSlot Tray1/Tray 1: "<</ManualFeed false/MediaPosition 2>>setpagedevice"
+*InputSlot Manual/Bypass tray: "<</ManualFeed true/MediaPosition 1>>setpagedevice"
+*CloseUI: *InputSlot
+
+*OpenUI *MediaType/Paper Type: PickOne
+*OrderDependency: 50 AnySetup *MediaType
+*DefaultMediaType: PlainRecycled
+*MediaType PlainRecycled/Plain or recycled: "<</MediaType(PlainRecycled)>>setpagedevice"
+*MediaType Plain1/Plain: "<</MediaType(Plain1)>>setpagedevice"
+*MediaType Recycled/Recycled: "<</MediaType(Recycled)>>setpagedevice"
+*MediaType Thin/Thin: "<</MediaType(Thin)>>setpagedevice"
+*MediaType Thick/Thick: "<</MediaType(Thick)>>setpagedevice"
+*CloseUI: *MediaType
+
+*OpenUI *TonerSave/Toner Save: Boolean
+*OrderDependency: 60 AnySetup *TonerSave
+*DefaultTonerSave: False
+*TonerSave False/Off: ""
+*TonerSave True/On: ""
+*CloseUI: *TonerSave
+
+*DefaultFont: Courier
+*Font Courier: Standard "(002.004S)" Standard ROM

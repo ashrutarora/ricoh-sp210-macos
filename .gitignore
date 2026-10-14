@@ -1,0 +1,12 @@
+out/
+.DS_Store
+__pycache__/
+*.pyc
+*.dSYM/
+third_party/dl/
+native/rastertoricohsp210
+native/rastertoricohsp210-ricoh
+native/dither_ricoh.h
+native/*.tmp
+vendor/*
+!vendor/README.md

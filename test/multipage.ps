@@ -1,0 +1,23 @@
+%!PS-Adobe-3.0
+%%Title: Ricoh SP 210 multi-page test
+%%Pages: 3
+%%EndComments
+%%Page: 1 1
+/Helvetica-Bold findfont 24 scalefont setfont
+72 700 moveto (Page 1: text) show
+/Times-Roman findfont 11 scalefont setfont
+0 1 40 { /i exch def 72 660 i 14 mul sub moveto (The quick brown fox jumps over the lazy dog. 0123456789 !@#$%^&*) show } for
+showpage
+%%Page: 2 2
+% smooth radial and linear gradients: exercises every grey level of the dither
+0 1 255 { /i exch def i 255 div setgray 72 i 2 mul add 300 2 400 rectfill } for
+/r 200 def
+200 -1 0 { /k exch def 1 k 200 div sub setgray 306 200 k 0 360 arc fill } for
+showpage
+%%Page: 3 3
+% solid black areas and a checkerboard
+0 setgray 72 72 200 200 rectfill
+0 1 39 { /x exch def 0 1 39 { /y exch def x y add 2 mod 0 eq { 320 x 5 mul add 72 y 5 mul add 5 5 rectfill } if } for } for
+0 1 99 { /i exch def 72 400 i 3 mul add moveto 540 400 i 3 mul add lineto 0.1 setlinewidth stroke } for
+showpage
+%%EOF

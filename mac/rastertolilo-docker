@@ -1,0 +1,44 @@
+#!/bin/sh
+# CUPS filter for macOS, fallback mode: CUPS raster in, Ricoh SP 210 byte stream out.
+# Hands the raster to Ricoh's own Linux filter running in the ricoh-sp210 container.
+# CUPS calls: rastertolilo-docker job user title copies options [file]
+# SPDX-License-Identifier: GPL-2.0-or-later
+set -u
+URL="${RICOH_SP210_URL:-http://127.0.0.1:9210}"
+
+if [ $# -lt 5 ] || [ $# -gt 6 ]; then
+  echo "ERROR: usage: $0 job user title copies options [file]" >&2
+  exit 1
+fi
+INPUT="${6:--}"
+TMP=
+
+if ! /usr/bin/curl -fsS --max-time 5 "$URL/health" >/dev/null 2>&1; then
+  echo "ERROR: Ricoh converter not reachable at $URL - is Docker Desktop running?" >&2
+  echo "STATE: +connecting-to-device" >&2
+  exit 1
+fi
+
+# CUPS raster can carry several pages; the converter returns the whole job.
+if [ "$INPUT" = "-" ]; then
+  TMP=$(/usr/bin/mktemp -t ricoh) || exit 1
+  trap '/bin/rm -f "$TMP"' EXIT
+  /bin/cat > "$TMP"
+  INPUT="$TMP"
+fi
+
+# Header values must stay on one line.
+OPTIONS=$(printf '%s' "$5" | /usr/bin/tr -d '\r\n')
+JOB=$(printf '%s' "$1" | /usr/bin/tr -cd '0-9')
+
+echo "INFO: Converting job $JOB for the Ricoh SP 210" >&2
+/usr/bin/curl -fsS --max-time 600 \
+  -H "X-Ricoh-Bridge: 1" \
+  -H "X-Cups-Options: $OPTIONS" \
+  -H "X-Cups-Title: job$JOB" \
+  -H "Content-Type: application/vnd.cups-raster" \
+  --data-binary "@$INPUT" \
+  "$URL/render"
+status=$?
+[ -n "$TMP" ] && /bin/rm -f "$TMP"
+exit $status

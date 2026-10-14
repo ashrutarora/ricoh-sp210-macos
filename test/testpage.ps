@@ -1,0 +1,20 @@
+%!PS-Adobe-3.0
+%%Title: Ricoh SP 210 Mac test page
+%%Pages: 1
+%%EndComments
+%%Page: 1 1
+/Helvetica-Bold findfont 28 scalefont setfont
+72 760 moveto (Ricoh SP 210SU on macOS) show
+/Helvetica findfont 14 scalefont setfont
+72 730 moveto (If you can read this, the Mac driver works.) show
+% border 1 inch in from each edge of A4
+2 setlinewidth 36 36 523 770 rectstroke
+% grey ramp: tests halftoning
+0 1 9 { /i exch def i 10 div setgray 72 i 45 mul add 600 40 40 rectfill } for
+% thin lines: tests resolution
+0 setgray 0.25 setlinewidth
+0 1 40 { 4 mul 72 add dup 400 moveto 560 lineto stroke } for
+/Courier findfont 10 scalefont setfont
+72 360 moveto (0.25pt lines above, grey ramp 0-90% above that.) show
+showpage
+%%EOF
