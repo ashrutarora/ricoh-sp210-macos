@@ -83,9 +83,12 @@ saved as PDF, JPEG or PNG.
 - **Wrong paper size:** pick the size in the print dialog, or reinstall with `RICOH_PAGESIZE=...`.
 - **Scanner not listed or scans fail:** check the printer is on and connected, then look at
   `~/Library/Logs/RicohSP210Scanner.log`. Only one app can scan at a time.
-- **Image Capture says "Waiting for scanner..." or "Failed to open a session on the device (-9921)":** macOS's
-  AirScan helper can get stuck if the scanner service restarts while Image Capture is open (for example after
-  re-running `install-scanner.sh`). Quit Image Capture, run `killall AirScanScanner`, and open it again.
+- **Image Capture says "Waiting for scanner..." or "Failed to open a session on the device (-9921)":** first
+  update and re-run `scanner/install-scanner.sh`. Version 1.0.0 also announced the scanner on Wi-Fi, and macOS
+  sometimes tried to reach it that way, which fails; it is now announced to this Mac only. If it still happens,
+  macOS's AirScan helper is stuck because the scanner service restarted while Image Capture was open (for
+  example after re-running `install-scanner.sh`): quit Image Capture, run `killall AirScanScanner`, and open
+  it again.
 
 ## How it works
 
@@ -100,7 +103,8 @@ printer's job and page headers. [FORMAT.md](FORMAT.md) documents the format.
 ## For developers
 
 - `make -C native` builds the driver; `test/security/run.sh` runs malformed-input tests under
-  AddressSanitizer; `scanner/test_security.sh` checks that web pages cannot drive the scanner service.
+  AddressSanitizer; `scanner/test_security.sh` checks that web pages cannot drive the scanner service, and
+  `scanner/test_bonjour.sh` that it is announced to this Mac only.
 - **Byte-for-byte check against Ricoh's driver.** `tools/verify.sh` renders test pages, runs Ricoh's own
   Linux filter in a Docker container and a `make RICOH_DITHER=1` build of this driver on the same input, and
   requires identical output. It needs Docker Desktop and your own copy of Ricoh's filter, which is not

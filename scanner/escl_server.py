@@ -3,8 +3,8 @@
 macOS finds it through Bonjour (_uscan._tcp) and lists it in Image Capture, Preview
 (File > Import from Scanner) and System Settings > Printers & Scanners.
 
-The HTTP service listens on 127.0.0.1 only and Bonjour announces it at 127.0.0.1, so only this
-Mac can reach it; nobody else on the network can scan from your glass. Requests from web pages
+The HTTP service listens on 127.0.0.1 only and Bonjour announces it, at 127.0.0.1, to this Mac
+only, so nobody else on the network sees it or can scan from your glass. Requests from web pages
 (Origin header, or a foreign Host name from DNS rebinding) are refused too.
 
     escl_server.py [--port 8090] [--name "Ricoh SP 210SU"]
@@ -292,14 +292,16 @@ class Handler(BaseHTTPRequestHandler):
 
 def announce(name, port):
     """Register with macOS's own mDNSResponder, as a proxy record pointing at 127.0.0.1.
-    A dns-sd left behind by a previous run that was killed outright is stopped first, so the
-    scanner is not listed twice."""
+    The record is local only (-lo): announced on the network interfaces, a resolve can answer on
+    Wi-Fi, and macOS's AirScan helper then ties its connection to Wi-Fi, where 127.0.0.1 cannot
+    be reached (Image Capture shows -9921). A dns-sd left behind by a previous run that was
+    killed outright is stopped first, so the scanner is not listed twice."""
     subprocess.run(["/usr/bin/pkill", "-u", str(os.getuid()), "-f",
-                    f"^/usr/bin/dns-sd -P {name} _uscan._tcp "], check=False)
+                    f"^/usr/bin/dns-sd (-lo )?-P {name} _uscan._tcp "], check=False)
     txt = ["txtvers=1", "vers=2.0", "rs=eSCL", f"ty={name}", "note=This Mac",
            f"uuid={SCANNER_UUID}", f"pdl={','.join(FORMATS)}", "cs=color,grayscale",
            "is=platen", "duplex=F"]
-    return subprocess.Popen(["/usr/bin/dns-sd", "-P", name, "_uscan._tcp", "local", str(port),
+    return subprocess.Popen(["/usr/bin/dns-sd", "-lo", "-P", name, "_uscan._tcp", "local", str(port),
                              BONJOUR_HOST, "127.0.0.1", *txt],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
