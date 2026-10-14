@@ -118,7 +118,7 @@ Needs the Xcode Command Line Tools: `xcode-select --install`.
 ## For developers
 
 - `make test`: `test/security/run.sh` runs malformed-input tests on the printer driver under
-  AddressSanitizer; `scanner/test_security.sh` checks, against the installed scanner service, that web pages
+  AddressSanitizer; `scanner/test_image.sh` checks levels, scaling and the PNG, JPEG and PDF output; `scanner/test_security.sh` checks, against the installed scanner service, that web pages
   cannot drive it and that it refuses ambiguous HTTP requests; `scanner/test_bonjour.sh` that it is announced
   to this Mac only. With the printer connected, `scanner/test_usb.sh` checks the scanner answers over USB
   (`ricoh-sp210-scanner status`).

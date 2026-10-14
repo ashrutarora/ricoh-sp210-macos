@@ -83,10 +83,19 @@ func cgImage(_ image: Raster) -> CGImage? {
 }
 
 /// The scan as a PNG, JPEG or PDF file (by MIME type), tagged with its resolution.
-func encode(_ image: Raster, format: String, dpi: Int) throws -> Data {
+/// JPEG quality: 0.9 for JPEG files, 0.75 for the picture inside a PDF (as in version 1.0).
+func encode(_ image: Raster, format: String, dpi: Int, quality: Double = 0.9) throws -> Data {
     guard let picture = cgImage(image) else { throw ScannerError("cannot build the image") }
     let out = NSMutableData()
     if format == "application/pdf" {
+        // The page's picture goes in as JPEG (Core Graphics passes JPEG data through unchanged);
+        // drawn from raw pixels it would be stored losslessly, several times bigger.
+        let jpeg = try encode(image, format: "image/jpeg", dpi: dpi, quality: 0.75)
+        guard let source = CGDataProvider(data: jpeg as CFData),
+              let jpegPicture = CGImage(jpegDataProviderSource: source, decode: nil, shouldInterpolate: false,
+                                        intent: .defaultIntent) else {
+            throw ScannerError("cannot write PDF")
+        }
         var page = CGRect(x: 0, y: 0, width: Double(image.width) * 72 / Double(dpi),
                           height: Double(image.height) * 72 / Double(dpi))
         guard let consumer = CGDataConsumer(data: out as CFMutableData),
@@ -94,7 +103,7 @@ func encode(_ image: Raster, format: String, dpi: Int) throws -> Data {
             throw ScannerError("cannot write PDF")
         }
         pdf.beginPDFPage(nil)
-        pdf.draw(picture, in: page)
+        pdf.draw(jpegPicture, in: page)
         pdf.endPDFPage()
         pdf.closePDF()
         return out as Data
@@ -104,7 +113,7 @@ func encode(_ image: Raster, format: String, dpi: Int) throws -> Data {
         throw ScannerError("cannot write \(format)")
     }
     var properties: [CFString: Any] = [kCGImagePropertyDPIWidth: dpi, kCGImagePropertyDPIHeight: dpi]
-    if format == "image/jpeg" { properties[kCGImageDestinationLossyCompressionQuality] = 0.9 }
+    if format == "image/jpeg" { properties[kCGImageDestinationLossyCompressionQuality] = quality }
     CGImageDestinationAddImage(destination, picture, properties as CFDictionary)
     guard CGImageDestinationFinalize(destination) else { throw ScannerError("cannot write \(format)") }
     return out as Data
