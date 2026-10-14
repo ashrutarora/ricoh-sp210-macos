@@ -83,6 +83,9 @@ saved as PDF, JPEG or PNG.
 - **Wrong paper size:** pick the size in the print dialog, or reinstall with `RICOH_PAGESIZE=...`.
 - **Scanner not listed or scans fail:** check the printer is on and connected, then look at
   `~/Library/Logs/RicohSP210Scanner.log`. Only one app can scan at a time.
+- **Image Capture says "Waiting for scanner..." or "Failed to open a session on the device (-9921)":** macOS's
+  AirScan helper can get stuck if the scanner service restarts while Image Capture is open (for example after
+  re-running `install-scanner.sh`). Quit Image Capture, run `killall AirScanScanner`, and open it again.
 
 ## How it works
 
