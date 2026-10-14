@@ -22,8 +22,9 @@ should work but are untested; reports welcome. Needs macOS 13 Ventura or later.
    [latest release](https://github.com/ashrutarora/ricoh-sp210-macos/releases/latest) and open it.
 2. Double-click **Install Ricoh SP 210SU**.
 3. macOS will probably say it "could not verify" the installer, because it is not registered with Apple
-   (that needs a paid developer account). Click **Done**, open **System Settings > Privacy & Security**,
-   scroll to the bottom and click **Open Anyway**, then confirm with your password.
+   (that needs a paid developer account). Click **Done**, then double-click **Open Privacy & Security** in
+   the disk image: it opens System Settings at the right place. Click **Open Anyway** next to the installer's
+   name and confirm with your password.
 4. Follow the installer, then connect the printer by USB and switch it on. macOS adds it with this driver.
 
 The disk image shows these steps too. The installer adds:

@@ -37,28 +37,56 @@ pkgbuild --quiet --root "$B/root" --component-plist "$B/components.plist" --scri
   --identifier "$ID" --version "$VERSION" --install-location / --ownership recommended "$B/component.pkg"
 
 # pkgbuild also packs macOS's file labels (com.apple.provenance, which cannot be removed) as
-# "._" entries. Rebuild the payload and scripts archives without them, owned by root:wheel.
-cpio_gz() { # dir > archive
-  (cd "$1" && bsdtar -c --format cpio --no-mac-metadata --no-xattrs --no-acls \
-    --uid 0 --gid 0 --uname root --gname wheel -f - .) | gzip -9n
+# "._" entries, so the payload and scripts archives are rebuilt here. Every entry gets an explicit
+# owner and mode; folders that already exist on every Mac get exactly the owner and mode they have
+# there, and the package is told to leave existing folders' permissions alone, so installing never
+# changes, say, /Applications (root:admin 775) to root:wheel 755.
+meta() { # path in the payload -> "mode uid gid"
+  case "$1" in
+    .|./Applications/Utilities|./Library|./Library/LaunchAgents) echo "40755 0 0" ;;
+    ./Applications) echo "40775 0 80" ;;
+    ./Library/Printers) echo "40555 0 0" ;;
+    ./Library/Printers/PPDs|./Library/Printers/PPDs/Contents|./Library/Printers/PPDs/Contents/Resources) echo "40755 0 80" ;;
+    *) echo "$(stat -f %p "$B/root/$1") 0 0" ;;
+  esac
+}
+(cd "$B/root" && find . | sort) | while IFS= read -r f; do
+  set -- $(meta "$f")
+  printf '%s\t%s\t%s\t%s\n' "$f" "$1" "$2" "$3"
+done > "$B/entries.txt"
+# The archive is written from an mtree list, which carries those owners and modes.
+awk -F'\t' '{
+  path = $1; gsub(/ /, "\\040", path)
+  type = substr($2, 1, 1) == "4" ? "dir" : "file"
+  printf "%s type=%s uid=%s gid=%s mode=%s\n", path, type, $3, $4, substr($2, length($2) - 3)
+}' "$B/entries.txt" > "$B/payload.mtree"
+cpio_gz() { # dir [mtree] > archive
+  if [ -n "${2:-}" ]; then
+    (cd "$1" && bsdtar -c --format cpio -f - "@$2") | gzip -9n
+  else
+    (cd "$1" && bsdtar -c --format cpio --no-mac-metadata --no-xattrs --no-acls \
+      --uid 0 --gid 0 --uname root --gname wheel -f - .) | gzip -9n
+  fi
 }
 pkgutil --expand "$B/component.pkg" "$B/expanded"
 C="$B/component"
 mkdir "$C"
 cp "$B/expanded/PackageInfo" "$C/"
-cpio_gz "$B/root" > "$C/Payload"
+cpio_gz "$B/root" "$PWD/$B/payload.mtree" > "$C/Payload"
 cpio_gz "$B/scripts" > "$C/Scripts"
-# The bill of materials, every entry owned by root:wheel (mkbom -i: path, mode, uid/gid, size, crc).
-(cd "$B/root" && find . | while IFS= read -r f; do
-  if [ -d "$f" ]; then
-    printf '%s\t%s\t0/0\n' "$f" "$(stat -f %p "$f")"
+# The bill of materials (mkbom -i: path, mode, uid/gid, and for files size and checksum).
+while IFS="$(printf '\t')" read -r f mode uid gid; do
+  if [ -d "$B/root/$f" ]; then
+    printf '%s\t%s\t%s/%s\n' "$f" "$mode" "$uid" "$gid"
   else
-    printf '%s\t%s\t0/0\t%s\t%s\n' "$f" "$(stat -f %p "$f")" "$(stat -f %z "$f")" "$(cksum < "$f" | cut -d' ' -f1)"
+    printf '%s\t%s\t%s/%s\t%s\t%s\n' "$f" "$mode" "$uid" "$gid" "$(stat -f %z "$B/root/$f")" \
+      "$(cksum < "$B/root/$f" | cut -d' ' -f1)"
   fi
-done) > "$B/bom.txt"
+done < "$B/entries.txt" > "$B/bom.txt"
 mkbom -i "$B/bom.txt" "$C/Bom"
 files=$(wc -l < "$B/bom.txt" | tr -d ' ')
-sed -i '' "s/numberOfFiles=\"[0-9]*\"/numberOfFiles=\"$files\"/" "$C/PackageInfo"
+sed -i '' -e "s/numberOfFiles=\"[0-9]*\"/numberOfFiles=\"$files\"/" \
+  -e 's/overwrite-permissions="true"/overwrite-permissions="false"/' "$C/PackageInfo"
 (cd "$C" && xar --compression none -cf ../ricoh-sp210.pkg Bom PackageInfo Payload Scripts)
 sed "s/\"VERSION\"/\"$VERSION\"/" pkg/Distribution.xml > "$B/Distribution.xml"
 productbuild --quiet --distribution "$B/Distribution.xml" --resources "$B/resources" --package-path "$B" "$PKG"

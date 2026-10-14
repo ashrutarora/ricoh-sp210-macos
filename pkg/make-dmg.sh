@@ -15,6 +15,6 @@ mkdir -p out/pkg
 swift pkg/make-background.swift out/pkg
 tiffutil -cathidpicheck out/pkg/background.png out/pkg/background@2x.png -out out/pkg/background.tiff 2>/dev/null
 rm -f "$DMG"
-"$VENV/bin/dmgbuild" -s pkg/dmg-settings.py -D pkg="$PKG" -D background=out/pkg/background.tiff \
+"$VENV/bin/dmgbuild" -s pkg/dmg-settings.py -D pkg="$PKG" -D link=pkg/Open-Privacy-Security.inetloc -D background=out/pkg/background.tiff \
   "Ricoh SP 210SU driver" "$DMG"
 echo "$DMG"

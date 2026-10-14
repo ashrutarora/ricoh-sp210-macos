@@ -77,30 +77,18 @@ func draw() {
     NSColor(srgbRed: 0.965, green: 0.969, blue: 0.976, alpha: 1).setFill()
     NSRect(x: 0, y: 0, width: width, height: height).fill()
 
-    // Left: the panel the installer icon sits on.
+    // Left: the panel the two icons sit on (positions in pkg/dmg-settings.py).
     let card = NSRect(x: panel.minX, y: height - panel.maxY, width: panel.width, height: panel.height)
     NSColor(srgbRed: 0.43, green: 0.50, blue: 0.59, alpha: 1).setFill()
     NSBezierPath(roundedRect: card, xRadius: 14, yRadius: 14).fill()
     let white = NSColor.white
-    text("Start here", x: panel.minX + 20, y: panel.minY + 24, width: panel.width - 40, size: 20, weight: .bold, color: white)
-    text("Double-click the installer below.", x: panel.minX + 20, y: panel.minY + 56, width: panel.width - 40,
-         size: 13, color: white.withAlphaComponent(0.9))
-    // An arrow down towards the icon.
-    let arrow = NSBezierPath()
-    let ax = panel.midX, top = height - (panel.minY + 104), tip = height - (panel.minY + 150)
-    arrow.move(to: NSPoint(x: ax, y: top))
-    arrow.line(to: NSPoint(x: ax, y: tip))
-    arrow.move(to: NSPoint(x: ax - 9, y: tip + 10))
-    arrow.line(to: NSPoint(x: ax, y: tip))
-    arrow.line(to: NSPoint(x: ax + 9, y: tip + 10))
-    arrow.lineWidth = 3
-    arrow.lineCapStyle = .round
-    arrow.lineJoinStyle = .round
-    white.withAlphaComponent(0.9).setStroke()
-    arrow.stroke()
-
-    text("Free and open source, on GitHub:\nashrutarora/ricoh-sp210-macos", x: panel.minX + 20, y: panel.maxY - 56,
-         width: panel.width - 30, size: 11, color: white.withAlphaComponent(0.85))
+    text("Start here", x: panel.minX + 20, y: panel.minY + 20, width: panel.width - 40, size: 20, weight: .bold, color: white)
+    step(1, x: panel.minX + 16, y: 92)
+    // A thin rule between the two icons.
+    white.withAlphaComponent(0.35).setFill()
+    NSRect(x: panel.minX + 20, y: height - 258, width: panel.width - 40, height: 1).fill()
+    text("If macOS blocks it:", x: panel.minX + 20, y: 268, width: panel.width - 40, size: 13, weight: .semibold, color: white)
+    step(2, x: panel.minX + 16, y: 296)
 
     // Right: the steps.
     let x = 296.0, w = width - x - 36
@@ -115,8 +103,8 @@ func draw() {
 
     y += 20
     step(2, x: x, y: y + 1)
-    y = rich("If macOS says it **could not verify** the installer, click **Done** (or **OK**). Open **System Settings**, " +
-             "choose **Privacy & Security**, scroll to the bottom and click:", x: tx, y: y, width: tw, size: 14)
+    y = rich("If macOS says it **could not verify** the installer, click **Done** (or **OK**). Then double-click " +
+             "**Open Privacy & Security** on the left and, next to the installer's name, click:", x: tx, y: y, width: tw, size: 14)
     button("Open Anyway", x: tx, y: y + 8)
     y += 38
     y = text("Confirm with your Mac password, and click Open Anyway again if macOS asks. It asks because this " +
@@ -126,8 +114,9 @@ func draw() {
     step(3, x: x, y: y + 1)
     y = rich("Follow the installer. Then connect the printer by USB and switch it on.", x: tx, y: y, width: tw, size: 14)
 
-    text("To print: File › Print, and choose Ricoh SP 210SU.\nTo scan: open Image Capture, or Preview › File › Import from Scanner.",
-         x: x, y: 410, width: w, size: 12, color: soft)
+    text("To print: File › Print, and choose Ricoh SP 210SU.\nTo scan: open Image Capture, or Preview › File › Import from Scanner.\n" +
+         "Free and open source: github.com/ashrutarora/ricoh-sp210-macos",
+         x: x, y: 396, width: w, size: 12, color: soft)
 }
 
 func render(scale: CGFloat, to path: String) {

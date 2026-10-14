@@ -19,14 +19,18 @@ stop_scanner_service() {
   return 0
 }
 
-# Version 1.0 installed the scanner per user from a Terminal script, with a Python copy.
+# Version 1.0 installed the scanner per user from a Terminal script, with a Python copy. The files
+# are removed as the home folder's owner, never as root: a home folder (or the world-writable
+# /Users/Shared) could hold symbolic links that would make root delete something else.
 remove_old_scanner_service() {
   for home in /Users/*; do
+    uid=$(stat -f %u "$home") || continue
+    [ "$uid" -ge 500 ] || continue
     old="$home/Library/LaunchAgents/$LABEL.plist"
     [ -f "$old" ] || continue
-    launchctl bootout "gui/$(stat -f %u "$home")/$LABEL" 2>/dev/null
-    rm -f "$old"
-    rm -rf "$home/Library/Application Support/RicohSP210Scanner"
+    launchctl bootout "gui/$uid/$LABEL" 2>/dev/null
+    sudo -u "#$uid" /bin/rm -f "$old"
+    sudo -u "#$uid" /bin/rm -rf "$home/Library/Application Support/RicohSP210Scanner"
   done
   return 0
 }
